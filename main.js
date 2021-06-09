@@ -33,10 +33,10 @@ class SampleSource {
 }
 
 function onInit() {
-  const endpoint = new URLSearchParams(window.location.search).get("endpoint") || "http://127.0.0.1:5656/";
+  M.AutoInit();
+  const endpoint = new URLSearchParams(window.location.search).get("endpoint") || "http://127.0.0.1:5665/";
 
-  console.log(endpoint);
-  const sampleSource = new SampleSource(`${endpoint}api/events`);
+  const sampleSource = new SampleSource(`${endpoint}events/sample`);
   window.addEventListener("sample", vus);
   window.addEventListener("sample", durations);
 }
@@ -44,7 +44,7 @@ function onInit() {
 const chart = {};
 
 function durations({ detail: { time, sample } }) {
-  const vars = ["http_req_duration_current", "http_req_waiting_current"];
+  const vars = ["http_req_duration_90", "http_req_duration_current"];
   const data = [time, sample[vars[0]], sample[vars[1]]];
   if (chart.durations) {
     chart.durations.setData(data);
@@ -54,16 +54,16 @@ function durations({ detail: { time, sample } }) {
   let opts = {
     title: "Request Durations",
     id: "duration",
-    width: window.innerWidth,
-    height: 400,
+    width: window.innerWidth - 40,
+    height: 320,
     series: [
       {},
-      { label: vars[0], stroke: "red", width: 1, fill: "rgba(255, 0, 0, 0.1)" },
-      { label: vars[1], stroke: "green", width: 1, fill: "rgba(0, 255, 0, 0.1)" },
+      { label: vars[0], stroke: "green", width: 1, fill: "rgba(0, 255, 0, 0.1)" },
+      { label: vars[1], stroke: "red", width: 1, fill: "rgba(255, 0, 0, 0.1)" },
     ],
   };
 
-  chart.durations = new uPlot(opts, data, document.body);
+  chart.durations = new uPlot(opts, data, document.querySelector("#durations"));
 }
 
 function vus({ detail: { time, sample } }) {
@@ -77,8 +77,8 @@ function vus({ detail: { time, sample } }) {
   let opts = {
     title: "Virtual Users",
     id: "vus",
-    width: window.innerWidth,
-    height: 400,
+    width: window.innerWidth - 40,
+    height: 320,
     series: [
       {},
       { label: vars[0], stroke: "blue", width: 1, fill: "rgba(0, 0, 255, 0.1)" },
@@ -86,5 +86,5 @@ function vus({ detail: { time, sample } }) {
     ],
   };
 
-  chart.vus = new uPlot(opts, data, document.body);
+  chart.vus = new uPlot(opts, data, document.querySelector("#vus"));
 }
